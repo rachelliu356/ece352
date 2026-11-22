@@ -24,7 +24,8 @@ N, Z,
 PCwrite, AddrSel, MemRead,
 MemWrite, IRload, R1Sel, MDRload,
 R1R2Load, ALU1, ALU2, ALUop,
-ALUOutWrite, RFWrite, RegIn, FlagWrite//, state
+ALUOutWrite, RFWrite, RegIn, FlagWrite,//, state
+reset_counter_flag, stop_counter_flag;
 );
 	input	[7:0] instr;
 	input	N, Z;
@@ -32,12 +33,14 @@ ALUOutWrite, RFWrite, RegIn, FlagWrite//, state
 	output	PCwrite, AddrSel, MemRead, MemWrite, IRload, R1Sel, MDRload;
 	output	R1R2Load, ALU1, ALUOutWrite, RFWrite, RegIn, FlagWrite;
 	output	[2:0] ALU2, ALUop;
+	output	reset_counter_flag, stop_counter_flag;
 	//output	[3:0] state;
 	
 	reg [3:0]	state;
 	reg	PCwrite, AddrSel, MemRead, MemWrite, IRload, R1Sel, MDRload;
 	reg	R1R2Load, ALU1, ALUOutWrite, RFWrite, RegIn, FlagWrite;
 	reg	[2:0] ALU2, ALUop;
+	reg	reset_counter_flag, stop_counter_flag;
 	
 	
 	// state constants (note: asn = add/sub/nand, asnsh = add/sub/nand/shift)
@@ -50,9 +53,15 @@ ALUOutWrite, RFWrite, RegIn, FlagWrite//, state
 	// asynchronous reset
 	always @(posedge clock or posedge reset)
 	begin
-		if (reset) state = reset_s;
+		if (reset) 
+		begin
+			state = reset_s;
+			reset_counter_flag <= 1'b1;
+			stop_counter_flag <= 1'b0;
+		end
 		else
 		begin
+			reset_counter_flag <= 1'b0;
 			case(state)
 				reset_s:	state = c1; 		// reset state
 				c1:			state = c2; 		// cycle 1
@@ -65,7 +74,10 @@ ALUOutWrite, RFWrite, RegIn, FlagWrite//, state
 								else if( instr[3:0] == 4'b1101 ) state = c3_bpz;
 								else if( instr[3:0] == 4'b0101 ) state = c3_bz;
 								else if( instr[3:0] == 4'b1001 ) state = c3_bnz;
-								else if( instr == 8'b00000001 ) state = c3_stop; // stop opcode: 00000001
+								else if( instr == 8'b00000001 ) begin
+									state = c3_stop; // stop opcode: 00000001
+									stop_counter_flag <= 1'b1;
+								end
 								else if( instr == 8'b10000001 ) state = c3_nop; // nop opcode: 10000001
 								else state = 0;
 							end
@@ -81,7 +93,10 @@ ALUOutWrite, RFWrite, RegIn, FlagWrite//, state
 				c3_bpz:		state = c1; 		// cycle 3: BPZ
 				c3_bz:		state = c1; 		// cycle 3: BZ
 				c3_bnz:		state = c1; 		// cycle 3: BNZ
-				c3_stop: 	state = c3_stop;	// cycle 3: STOP, infinite loop at stop
+				c3_stop: 	begin
+					state = c3_stop;	// cycle 3: STOP, infinite loop at stop
+					stop_counter_flag <= 1'b1;
+				end
 				c3_nop:		state = c1; 		// cycle 3: NOP, go back to fetch
 			endcase
 		end
