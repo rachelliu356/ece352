@@ -26,7 +26,7 @@ MemWrite, IRload, R1Sel, MDRload,
 R1R2Load, ALU1, ALU2, ALUop,
 ALUOutWrite, RFWrite, RegIn, FlagWrite//, state
 );
-	input	[3:0] instr;
+	input	[7:0] instr;
 	input	N, Z;
 	input	reset, clock;
 	output	PCwrite, AddrSel, MemRead, MemWrite, IRload, R1Sel, MDRload;
@@ -57,15 +57,16 @@ ALUOutWrite, RFWrite, RegIn, FlagWrite//, state
 				reset_s:	state = c1; 		// reset state
 				c1:			state = c2; 		// cycle 1
 				c2:			begin				// cycle 2
-								if(instr == 4'b0100 | instr == 4'b0110 | instr == 4'b1000) state = c3_asn;
+								if(instr[3:0] == 4'b0100 | instr[3:0] == 4'b0110 | instr[3:0] == 4'b1000) state = c3_asn;
 								else if( instr[2:0] == 3'b011 ) state = c3_shift;
 								else if( instr[2:0] == 3'b111 ) state = c3_ori;
-								else if( instr == 4'b0000 ) state = c3_load;
-								else if( instr == 4'b0010 ) state = c3_store;
-								else if( instr == 4'b1101 ) state = c3_bpz;
-								else if( instr == 4'b0101 ) state = c3_bz;
-								else if( instr == 4'b1001 ) state = c3_bnz;
-								else if( instr == 4'b0001 ) state = c3_stop; // stop op-code: 0001
+								else if( instr[3:0] == 4'b0000 ) state = c3_load;
+								else if( instr[3:0] == 4'b0010 ) state = c3_store;
+								else if( instr[3:0] == 4'b1101 ) state = c3_bpz;
+								else if( instr[3:0] == 4'b0101 ) state = c3_bz;
+								else if( instr[3:0] == 4'b1001 ) state = c3_bnz;
+								else if( instr == 8'b00000001 ) state = c3_stop; // stop opcode: 00000001
+								else if( instr == 8'b10000001 ) state = c3_nop; // nop opcode: 10000001
 								else state = 0;
 							end
 				c3_asn:		state = c4_asnsh;	// cycle 3: ADD SUB NAND
@@ -80,7 +81,8 @@ ALUOutWrite, RFWrite, RegIn, FlagWrite//, state
 				c3_bpz:		state = c1; 		// cycle 3: BPZ
 				c3_bz:		state = c1; 		// cycle 3: BZ
 				c3_bnz:		state = c1; 		// cycle 3: BNZ
-				c3_stop: 	state = c3_stop;	// infinite loop at stop
+				c3_stop: 	state = c3_stop;	// cycle 3: STOP, infinite loop at stop
+				c3_nop:		state = c1; 		// cycle 3: NOP, go back to fetch
 			endcase
 		end
 	end
@@ -400,7 +402,25 @@ ALUOutWrite, RFWrite, RegIn, FlagWrite//, state
 					RegIn = 0;
 					FlagWrite = 0;
 				end
-			c3_stop: 		//control = {};
+			c3_stop: 		//control = 19'b0000000000000000000;
+				begin
+					PCwrite = 0;
+					AddrSel = 0;
+					MemRead = 0;
+					MemWrite = 0;
+					IRload = 0;
+					R1Sel = 0;
+					MDRload = 0;
+					R1R2Load = 0;
+					ALU1 = 0;
+					ALU2 = 3'b000;
+					ALUop = 3'b000;
+					ALUOutWrite = 0;
+					RFWrite = 0;
+					RegIn = 0;
+					FlagWrite = 0;
+				end
+			c3_nop: 		//control = 19'b0000000000000000000;
 				begin
 					PCwrite = 0;
 					AddrSel = 0;
