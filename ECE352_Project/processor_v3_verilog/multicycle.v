@@ -50,8 +50,8 @@ wire	[2:0] ALUOp, ALU2;
 wire	[1:0] R1_in;
 wire	Nwire, Zwire;
 reg		N, Z;
-wire  	reset_counter_flag, stop_counter_flag;
-reg  	[15:0] perf_counter;
+wire  	reset_counter_flag, stop_counter_flag; // add flags to reset and stop the counter
+reg  	[15:0] perf_counter; // 16 bit performance counter
 
 // ------------------------ Input Assignment ------------------------ //
 assign	clock = KEY[1];
@@ -62,8 +62,9 @@ assign	reset =  ~KEY[0]; // KEY is active high
 // --------------------- HEX Performance Counter -------------------  //
 HEXs	HEX_display(
 	.in0(reg0),.in1(reg1),
-	.in2(SW[2] ? perf_counter[15:8] : reg2), .in3(SW[2] ? perf_counter[7:0]  : reg3),
-	.selH(SW[0] | SW[2]),
+	.in2(SW[2] ? perf_counter[15:8] : reg2), .in3(SW[2] ? perf_counter[7:0]  : reg3), // display upper and lower 8 bits of performance counter
+																					  // if SW[2] == 1, else display whatever it was doing before
+	.selH(SW[0] | SW[2]), // enabled when SW[2] == 1 too
 	.out0(HEX0),.out1(HEX1),.out2(HEX2),.out3(HEX3),
 	.out4(HEX4),.out5(HEX5)
 );
@@ -86,12 +87,12 @@ assign HEX7 = 7'b1111111;
 */
 
 FSM		Control(
-	.reset(reset),.clock(clock),.N(N),.Z(Z),.instr(IR),
+	.reset(reset),.clock(clock),.N(N),.Z(Z),.instr(IR), // take entire IR instead of just IR[3:0] because of stop and nop instructions
 	.PCwrite(PCWrite),.AddrSel(AddrSel),.MemRead(MemRead),.MemWrite(MemWrite),
 	.IRload(IRLoad),.R1Sel(R1Sel),.MDRload(MDRLoad),.R1R2Load(R1R2Load),
 	.ALU1(ALU1),.ALUOutWrite(ALUOutWrite),.RFWrite(RFWrite),.RegIn(RegIn),
 	.FlagWrite(FlagWrite),.ALU2(ALU2),.ALUop(ALUOp), 
-	.reset_counter_flag(reset_counter_flag), .stop_counter_flag(stop_counter_flag)
+	.reset_counter_flag(reset_counter_flag), .stop_counter_flag(stop_counter_flag) // set stop and reset counter flags from control FSM outputs
 );
 
 memory	DataMem(
@@ -189,6 +190,7 @@ if (FlagWrite)
 	end
 end
 
+// increment or reset performance counter based on flags
 always@(posedge clock or posedge reset)
 begin
 	if (reset)

@@ -33,14 +33,14 @@ reset_counter_flag, stop_counter_flag
 	output	PCwrite, AddrSel, MemRead, MemWrite, IRload, R1Sel, MDRload;
 	output	R1R2Load, ALU1, ALUOutWrite, RFWrite, RegIn, FlagWrite;
 	output	[2:0] ALU2, ALUop;
-	output	reset_counter_flag, stop_counter_flag;
+	output	reset_counter_flag, stop_counter_flag; // add reset and stop counter flags as control signal outputs
 	//output	[3:0] state;
 	
-	reg [4:0]	state;
+	reg [4:0]	state; // 5 bit state to support c3_nop
 	reg	PCwrite, AddrSel, MemRead, MemWrite, IRload, R1Sel, MDRload;
 	reg	R1R2Load, ALU1, ALUOutWrite, RFWrite, RegIn, FlagWrite;
 	reg	[2:0] ALU2, ALUop;
-	reg	reset_counter_flag, stop_counter_flag;
+	reg	reset_counter_flag, stop_counter_flag; // add reset and stop counter flags as variables 
 	
 	
 	// state constants (note: asn = add/sub/nand, asnsh = add/sub/nand/shift)
@@ -76,7 +76,7 @@ reset_counter_flag, stop_counter_flag
 								else if( instr[3:0] == 4'b1001 ) state = c3_bnz;
 								else if( instr == 8'b00000001 ) begin
 									state = c3_stop; // stop opcode: 00000001
-									stop_counter_flag <= 1'b1;
+									stop_counter_flag <= 1'b1; // stop counter in instruction decode stage when stop detected
 								end
 								else if( instr == 8'b10000001 ) state = c3_nop; // nop opcode: 10000001
 								else state = 0;
@@ -95,7 +95,7 @@ reset_counter_flag, stop_counter_flag
 				c3_bnz:		state = c1; 		// cycle 3: BNZ
 				c3_stop: 	begin
 					state = c3_stop;	// cycle 3: STOP, infinite loop at stop
-					stop_counter_flag <= 1'b1;
+					stop_counter_flag <= 1'b1; // keep stop counter flag high on stop
 				end
 				c3_nop:		state = c1; 		// cycle 3: NOP, go back to fetch
 			endcase
