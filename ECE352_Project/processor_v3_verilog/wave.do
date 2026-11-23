@@ -21,8 +21,18 @@ add wave -noupdate /multicycle_tb/HEX4
 add wave -noupdate /multicycle_tb/HEX5
 add wave -noupdate /multicycle_tb/HEX6
 add wave -noupdate /multicycle_tb/HEX7
+add wave -noupdate -radix binary /multicycle_tb/DUT/IR
+add wave -noupdate -radix hexadecimal /multicycle_tb/DUT/perf_counter
+add wave -noupdate -radix hexadecimal /multicycle_tb/DUT/R2wire
+add wave -noupdate -radix hexadecimal /multicycle_tb/DUT/R1wire
+add wave -noupdate -radix hexadecimal /multicycle_tb/DUT/RF_block/k0
+add wave -noupdate -radix hexadecimal /multicycle_tb/DUT/RF_block/k1
+add wave -noupdate -radix hexadecimal /multicycle_tb/DUT/RF_block/k2
+add wave -noupdate -radix hexadecimal /multicycle_tb/DUT/RF_block/k3
+add wave -noupdate -radix hexadecimal /multicycle_tb/DUT/Control/state
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {2500 ns} 0}
+WaveRestoreCursors {{Cursor 1} {822674 ps} 0}
+quietly wave cursor active 1
 configure wave -namecolwidth 227
 configure wave -valuecolwidth 57
 configure wave -justifyvalue left
@@ -37,13 +47,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {0 ps} {2500 ns}
-
-add wave -noupdate -radix binary /multicycle_tb/DUT/IR
-add wave -noupdate -radix hexadecimal /multicycle_tb/DUT/perf_counter
-add wave -noupdate -radix hexadecimal /multicycle_tb/DUT/R2wire
-add wave -noupdate -radix hexadecimal /multicycle_tb/DUT/R1wire
-add wave -noupdate -radix hexadecimal /multicycle_tb/DUT/RF_block/k0
-add wave -noupdate -radix hexadecimal /multicycle_tb/DUT/RF_block/k1
-add wave -noupdate -radix hexadecimal /multicycle_tb/DUT/RF_block/k2
-add wave -noupdate -radix hexadecimal /multicycle_tb/DUT/RF_block/k3
+WaveRestoreZoom {125 ns} {2625 ns}
