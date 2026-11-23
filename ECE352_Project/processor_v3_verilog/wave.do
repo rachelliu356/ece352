@@ -43,3 +43,7 @@ add wave -noupdate -radix binary /multicycle_tb/DUT/IR
 add wave -noupdate -radix hexadecimal /multicycle_tb/DUT/perf_counter
 add wave -noupdate -radix hexadecimal /multicycle_tb/DUT/R2wire
 add wave -noupdate -radix hexadecimal /multicycle_tb/DUT/R1wire
+add wave -noupdate -radix hexadecimal /multicycle_tb/DUT/RF_block/k0
+add wave -noupdate -radix hexadecimal /multicycle_tb/DUT/RF_block/k1
+add wave -noupdate -radix hexadecimal /multicycle_tb/DUT/RF_block/k2
+add wave -noupdate -radix hexadecimal /multicycle_tb/DUT/RF_block/k3
