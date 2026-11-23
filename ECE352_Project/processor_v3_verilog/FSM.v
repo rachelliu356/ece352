@@ -33,14 +33,14 @@ reset_counter_flag, stop_counter_flag
 	output	PCwrite, AddrSel, MemRead, MemWrite, IRload, R1Sel, MDRload;
 	output	R1R2Load, ALU1, ALUOutWrite, RFWrite, RegIn, FlagWrite;
 	output	[2:0] ALU2, ALUop;
-	output	reset_counter_flag, stop_counter_flag; // add reset and stop counter flags as control signal outputs
+	output	reset_counter_flag, stop_counter_flag; // add reset and stop counter flags as control FSM outputs
 	//output	[3:0] state;
 	
 	reg [4:0]	state; // 5 bit state to support c3_nop
 	reg	PCwrite, AddrSel, MemRead, MemWrite, IRload, R1Sel, MDRload;
 	reg	R1R2Load, ALU1, ALUOutWrite, RFWrite, RegIn, FlagWrite;
 	reg	[2:0] ALU2, ALUop;
-	reg	reset_counter_flag, stop_counter_flag; // add reset and stop counter flags as variables 
+	reg	reset_counter_flag, stop_counter_flag; // add reset and stop counter flags as registers (assigned in always block)
 	
 	
 	// state constants (note: asn = add/sub/nand, asnsh = add/sub/nand/shift)

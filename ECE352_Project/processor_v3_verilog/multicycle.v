@@ -50,8 +50,8 @@ wire	[2:0] ALUOp, ALU2;
 wire	[1:0] R1_in;
 wire	Nwire, Zwire;
 reg		N, Z;
-wire  	reset_counter_flag, stop_counter_flag; // add flags to reset and stop the counter
-reg  	[15:0] perf_counter; // 16 bit performance counter
+wire  	reset_counter_flag, stop_counter_flag; // add flags to reset and stop the counter, flags are output signals of control FSM (wires)
+reg  	[15:0] perf_counter; // 16 bit performance counter register
 
 // ------------------------ Input Assignment ------------------------ //
 assign	clock = KEY[1];
