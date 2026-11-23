@@ -14,7 +14,8 @@ module multicycle_tb;
 	wire	[7:0] LEDG;
 	wire	[17:0] LEDR;
 
-	wire	[1:0] KEY, SW;
+	wire	[1:0] KEY;
+	wire 	[4:0] SW; // change SW to 5 because my thing is broken :(
 	
 	reg reset; // active-low
 	reg clock;

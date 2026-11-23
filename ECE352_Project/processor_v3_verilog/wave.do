@@ -7,6 +7,8 @@ add wave -noupdate -radix hexadecimal /multicycle_tb/DUT/HEX_display/in0
 add wave -noupdate -radix hexadecimal /multicycle_tb/DUT/HEX_display/in1
 add wave -noupdate -radix hexadecimal /multicycle_tb/DUT/HEX_display/in2
 add wave -noupdate -radix hexadecimal /multicycle_tb/DUT/HEX_display/in3
+add wave -noupdate -radix hexadecimal /multicycle_tb/DUT/IR
+add wave -noupdate -radix hexadecimal /multicycle_tb/DUT/perf_counter
 add wave -noupdate -divider {multicycle.v inputs}
 add wave -noupdate /multicycle_tb/KEY
 add wave -noupdate /multicycle_tb/SW
