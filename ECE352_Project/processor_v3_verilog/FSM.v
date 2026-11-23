@@ -25,7 +25,7 @@ PCwrite, AddrSel, MemRead,
 MemWrite, IRload, R1Sel, MDRload,
 R1R2Load, ALU1, ALU2, ALUop,
 ALUOutWrite, RFWrite, RegIn, FlagWrite,//, state
-reset_counter_flag, stop_counter_flag;
+reset_counter_flag, stop_counter_flag
 );
 	input	[7:0] instr;
 	input	N, Z;
@@ -36,7 +36,7 @@ reset_counter_flag, stop_counter_flag;
 	output	reset_counter_flag, stop_counter_flag;
 	//output	[3:0] state;
 	
-	reg [3:0]	state;
+	reg [4:0]	state;
 	reg	PCwrite, AddrSel, MemRead, MemWrite, IRload, R1Sel, MDRload;
 	reg	R1R2Load, ALU1, ALUOutWrite, RFWrite, RegIn, FlagWrite;
 	reg	[2:0] ALU2, ALUop;
@@ -44,10 +44,10 @@ reset_counter_flag, stop_counter_flag;
 	
 	
 	// state constants (note: asn = add/sub/nand, asnsh = add/sub/nand/shift)
-	parameter [3:0] reset_s = 0, c1 = 1, c2 = 2, c3_asn = 3,
+	parameter [4:0] reset_s = 0, c1 = 1, c2 = 2, c3_asn = 3,
 					c4_asnsh = 4, c3_shift = 5, c3_ori = 6,
 					c4_ori = 7, c5_ori = 8, c3_load = 9, c4_load = 10,
-					c3_store = 11, c3_bpz = 12, c3_bz = 13, c3_bnz = 14, c3_stop = 15;
+					c3_store = 11, c3_bpz = 12, c3_bz = 13, c3_bnz = 14, c3_stop = 15, c3_nop = 16;
 	
 	// determines the next state based upon the current state; supports
 	// asynchronous reset
@@ -161,7 +161,7 @@ reset_counter_flag, stop_counter_flag;
 					FlagWrite = 0;
 				end
 			c3_asn:		begin
-							if ( instr == 4'b0100 ) 		// add
+							if ( instr[3:0] == 4'b0100 ) 		// add
 								//control = 19'b0000000010000001001;
 							begin
 								PCwrite = 0;
@@ -180,7 +180,7 @@ reset_counter_flag, stop_counter_flag;
 								RegIn = 0;
 								FlagWrite = 1;
 							end	
-							else if ( instr == 4'b0110 ) 	// sub
+							else if ( instr[3:0] == 4'b0110 ) 	// sub
 								//control = 19'b0000000010000011001;
 							begin
 								PCwrite = 0;

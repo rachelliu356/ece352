@@ -50,6 +50,8 @@ wire	[2:0] ALUOp, ALU2;
 wire	[1:0] R1_in;
 wire	Nwire, Zwire;
 reg		N, Z;
+wire  	reset_counter_flag, stop_counter_flag;
+reg  	[15:0] perf_counter;
 
 // ------------------------ Input Assignment ------------------------ //
 assign	clock = KEY[1];
@@ -57,8 +59,11 @@ assign	reset =  ~KEY[0]; // KEY is active high
 
 
 // ------------------- DE2 compatible HEX display ------------------- //
+// --------------------- HEX Performance Counter -------------------  //
 HEXs	HEX_display(
-	.in0(reg0),.in1(reg1),.in2(reg2),.in3(reg3),.selH(SW[0]),
+	.in0(reg0),.in1(reg1),
+	.in2(SW[2] ? perf_counter[15:8] : reg2), .in3(SW[2] ? perf_counter[7:0]  : reg3),
+	.selH(SW[0] | SW[2]),
 	.out0(HEX0),.out1(HEX1),.out2(HEX2),.out3(HEX3),
 	.out4(HEX4),.out5(HEX5)
 );
@@ -85,7 +90,8 @@ FSM		Control(
 	.PCwrite(PCWrite),.AddrSel(AddrSel),.MemRead(MemRead),.MemWrite(MemWrite),
 	.IRload(IRLoad),.R1Sel(R1Sel),.MDRload(MDRLoad),.R1R2Load(R1R2Load),
 	.ALU1(ALU1),.ALUOutWrite(ALUOutWrite),.RFWrite(RFWrite),.RegIn(RegIn),
-	.FlagWrite(FlagWrite),.ALU2(ALU2),.ALUop(ALUOp)
+	.FlagWrite(FlagWrite),.ALU2(ALU2),.ALUop(ALUOp), 
+	.reset_counter_flag(reset_counter_flag), .stop_counter_flag(stop_counter_flag)
 );
 
 memory	DataMem(
@@ -181,6 +187,16 @@ if (FlagWrite)
 	N <= Nwire;
 	Z <= Zwire;
 	end
+end
+
+always@(posedge clock or posedge reset)
+begin
+	if (reset)
+		perf_counter <= 16'b0;
+	else if (reset_counter_flag)
+		perf_counter <= 16'b0;
+	else if (!stop_counter_flag)
+		perf_counter <= perf_counter + 16'b1;
 end
 
 // ------------------------ Assign Constant 1 ----------------------- //
